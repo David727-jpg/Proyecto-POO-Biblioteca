@@ -15,6 +15,7 @@ public class EjemplarService {
     private List<Ejemplar> ejemplares;
     
     public EjemplarService() {
+        //LISTA PARA GUARDAR LOS EJEMPLARES
         try {
             this.ejemplares = new ArrayList<>();
             cargarEjemplaresDePrueba();
@@ -85,6 +86,7 @@ public class EjemplarService {
     }
     
     public List<Ejemplar> listarTodosEjemplares() {
+        //LISTA POR SI ACASO
         try {
             System.out.println(" Listando todos los ejemplares.");
             return new ArrayList<>(ejemplares);
@@ -99,11 +101,13 @@ public class EjemplarService {
         try {
             System.out.println(" Buscando ejemplar por título: '" + titulo + "'");
             
+            //VALIDACIONES EL TITULO NO PUEDE ESTAR VACIO
             if (titulo == null || titulo.isEmpty()) {
                 throw new IllegalArgumentException("El título de búsqueda no puede estar vacío");
             }
-            
+            //GUARDAR LOS RESULTADOS EN 
             List<Ejemplar> resultados = new ArrayList<>();
+           //BUSCA EN LA LISTA CON EL BUCLE DE FOR
             for (Ejemplar ejemplar : ejemplares) {
                 if (ejemplar.getTitulo().toLowerCase().contains(titulo.toLowerCase())) {
                     resultados.add(ejemplar);
@@ -112,7 +116,7 @@ public class EjemplarService {
             
             System.out.println(" Búsqueda completada: " + resultados.size() + " resultados encontrados");
             return resultados;
-            
+            //CODIGOS DE ERROR 
         } catch (IllegalArgumentException e) {
             System.out.println(" Error de validación: " + e.getMessage());
             return new ArrayList<>();
@@ -127,12 +131,13 @@ public class EjemplarService {
     public List<Ejemplar> buscarEjemplarPorAutor(String autor) {
         try {
             System.out.println(" Buscando ejemplar por autor: '" + autor + "'");
-            
+            //VALIDACIONES QUE EL AUTOR NO PUEDE SER NULL
             if (autor == null || autor.isEmpty()) {
                 throw new IllegalArgumentException("El autor de búsqueda no puede estar vacío");
             }
-            
+            //GUARDA LOS RESULTADOS EN LA LISTA
             List<Ejemplar> resultados = new ArrayList<>();
+           //BUSCA EN LA LISTA CON EL BUCLE DE FOR
             for (Ejemplar ejemplar : ejemplares) {
                 if (ejemplar.getAutor() != null && 
                     ejemplar.getAutor().toLowerCase().contains(autor.toLowerCase())) {
@@ -142,7 +147,7 @@ public class EjemplarService {
             
             System.out.println(" Búsqueda por autor completada: " + resultados.size() + " resultados encontrados");
             return resultados;
-            
+            //CODIGOS DE ERROR 
         } catch (IllegalArgumentException e) {
             System.out.println(" Error de validación: " + e.getMessage());
             return new ArrayList<>();
@@ -172,8 +177,10 @@ public class EjemplarService {
             // Validar tipo de ejemplar
             String[] tiposValidos = {"LIBRO", "REVISTA", "CD", "TESIS"};
             boolean tipoValido = false;
+            //BUSCA CADA TIPO VALIDO PARA EL NUEVO EJEMPLAR
             for (String tipo : tiposValidos) {
                 if (tipo.equals(nuevoEjemplar.getTipo())) {
+                    //SI ENCUENTRA UNA COINCIDENCIA DEVUELVE TRUE
                     tipoValido = true;
                     break;
                 }
@@ -202,7 +209,7 @@ public class EjemplarService {
             System.out.println(" Ejemplar agregado exitosamente: " + nuevoEjemplar.getTitulo() + " (ID: " + nuevoId + ")");
             System.out.println("  Tipo: " + nuevoEjemplar.getTipo() + " | Ubicación: " + nuevoEjemplar.getUbicacion());
             return true;
-            
+            //MENSAJES DE ERROR
         } catch (IllegalArgumentException e) {
             System.out.println(" Error de datos: " + e.getMessage());
             return false;
@@ -239,7 +246,7 @@ public class EjemplarService {
                     return true;
                 }
             }
-            
+            //MENSAJES DE ERROR
             throw new RuntimeException("No se encontró ejemplar con ID: " + ejemplarId);
             
         } catch (IllegalArgumentException e) {
@@ -256,14 +263,15 @@ public class EjemplarService {
     public Ejemplar buscarEjemplarPorId(int id) {
         try {
             System.out.println(" Buscando ejemplar por ID: " + id);
-            
+            //BUSCAR EN LA LISTA 
             for (Ejemplar ejemplar : ejemplares) {
+                //COMPARA LOS IDS
                 if (ejemplar.getId() == id) {
                     System.out.println(" Ejemplar encontrado: " + ejemplar.getTitulo());
                     return ejemplar;
                 }
             }
-            
+            //MENSAJES DE ERROR
             throw new RuntimeException("Ejemplar con ID " + id + " no encontrado");
             
         } catch (RuntimeException e) {
