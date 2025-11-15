@@ -7,81 +7,66 @@ package service;
 import Model.Prestamo;
 import Model.Usuario;
 import Model.Ejemplar;
+import repository.PrestamoRepository;
+import repository.PrestamoRepositoryImpl;
+import repository.UsuarioRepository;
+import repository.UsuarioRepositoryImpl;
+import repository.EjemplarRepository;
+import repository.EjemplarRepositoryImpl;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-/**
- *
+ /*
  * @author josed
  */
 public class PrestamoService {
-    private List<Prestamo> prestamos;
-    private UsuarioService usuarioService;
-    private EjemplarService ejemplarService;
-    private double moraDiaria = 2.50; // Valor de mora por día
-    private int diasPrestamo = 15; // Días de préstamo permitidos
-    private int maxPrestamos = 3; // Máximo de préstamos por usuario
+    private PrestamoRepository prestamoRepository;
+    private UsuarioRepository usuarioRepository;
+    private EjemplarRepository ejemplarRepository;
+    private double moraDiaria = 2.50;
+    private int diasPrestamo = 15;
+    private int maxPrestamos = 3;
     
     public PrestamoService() {
         try {
-            this.prestamos = new ArrayList<>();
-            this.usuarioService = new UsuarioService();
-            this.ejemplarService = new EjemplarService();
-            System.out.println(" PrestamoService inicializado correctamente");
+            this.prestamoRepository = new PrestamoRepositoryImpl();
+            this.usuarioRepository = new UsuarioRepositoryImpl();
+            this.ejemplarRepository = new EjemplarRepositoryImpl();
+            System.out.println("✅ PrestamoService inicializado con Base de Datos");
             
         } catch (Exception e) {
-            System.out.println(" Error crítico al inicializar PrestamoService: " + e.getMessage());
+            System.out.println("❌ Error crítico al inicializar PrestamoService: " + e.getMessage());
         }
     }
     
-    // ==================== MÉTODO AUXILIAR PARA GENERAR ID ====================
-private int generarNuevoId() {
-    try {
-        if (prestamos.isEmpty()) {
-            return 1;
-        }
-        
-        // Encontrar el máximo ID actual
-        int maxId = 0;
-        for (Prestamo prestamo : prestamos) {
-            if (prestamo.getId() > maxId) {
-                maxId = prestamo.getId();
-            }
-        }
-        return maxId + 1;
-        
-    } catch (Exception e) {
-        System.out.println(" Error al generar nuevo ID, usando fallback: " + e.getMessage());
-        return prestamos.size() + 1;
-    }
-}
- 
+    // 
     
     public boolean realizarPrestamo(int usuarioId, int ejemplarId) {
         try {
-            System.out.println("Intentando realizar préstamo...");
-            System.out.println(" Usuario ID: " + usuarioId);
-            System.out.println(" Ejemplar ID: " + ejemplarId);
+            System.out.println("📖 Intentando realizar préstamo...");
+            System.out.println("   👤 Usuario ID: " + usuarioId);
+            System.out.println("   📚 Ejemplar ID: " + ejemplarId);
             
             // 1. VALIDAR USUARIO
-            Usuario usuario = usuarioService.buscarUsuarioPorId(usuarioId);
+            Usuario usuario = usuarioRepository.findById(usuarioId);
             if (usuario == null) {
                 throw new RuntimeException("Usuario no encontrado con ID: " + usuarioId);
             }
             
             // 2. VALIDAR QUE USUARIO NO TENGA MORA
-            if (usuarioService.tieneMora(usuarioId)) {
-                throw new RuntimeException("Usuario tiene mora pendiente. No puede realizar préstamos");
+            if (usuario.getMora() > 0) {
+                throw new RuntimeException("Usuario tiene mora pendiente de $" + usuario.getMora() + ". No puede realizar préstamos");
             }
             
             // 3. VALIDAR LÍMITE DE PRÉSTAMOS
-            int prestamosActivos = contarPrestamosActivos(usuarioId);
-            if (prestamosActivos >= maxPrestamos) {
+            List<Prestamo> prestamosActivosUsuario = prestamoRepository.findActivosByUsuario(usuarioId);
+            if (prestamosActivosUsuario.size() >= maxPrestamos) {
                 throw new RuntimeException("Límite de préstamos alcanzado. Máximo permitido: " + maxPrestamos);
             }
             
             // 4. VALIDAR EJEMPLAR
-            Ejemplar ejemplar = ejemplarService.buscarEjemplarPorId(ejemplarId);
+            Ejemplar ejemplar = ejemplarRepository.findById(ejemplarId);
             if (ejemplar == null) {
                 throw new RuntimeException("Ejemplar no encontrado con ID: " + ejemplarId);
             }
@@ -93,32 +78,39 @@ private int generarNuevoId() {
             
             // 6. CREAR PRÉSTAMO
             Prestamo prestamo = new Prestamo();
-            prestamo.setId(generarNuevoId()); // USAR MÉTODO MEJORADO en lugar de prestamos.size() + 
             prestamo.setIdUsuario(usuarioId);
             prestamo.setIdEjemplar(ejemplarId);
             prestamo.setFechadePrestamo(new Date());
             prestamo.setEstado("ACTIVO");
             prestamo.setMora(0.0);
             
-            // 7. AGREGAR PRÉSTAMO A LA LISTA
-            prestamos.add(prestamo);
+            // 7. GUARDAR PRÉSTAMO EN BD
+            Prestamo prestamoGuardado = prestamoRepository.save(prestamo);
+            if (prestamoGuardado == null) {
+                throw new RuntimeException("Error al guardar el préstamo en la base de datos");
+            }
             
             // 8. ACTUALIZAR DISPONIBILIDAD DEL EJEMPLAR
-            ejemplarService.actualizarCantidades(
+            boolean cantidadActualizada = ejemplarRepository.updateCantidades(
                 ejemplarId,
                 ejemplar.getCantidadTotal(),
                 ejemplar.getCantidadDisponible() - 1
             );
             
-            System.out.println(" Préstamo realizado exitosamente");
-            System.out.println(" Fecha de préstamo: " + prestamo.getFechadePrestamo());
-            System.out.println(" Ejemplar: " + ejemplar.getTitulo());
-            System.out.println(" Usuario: " + usuario.getNombre());
+            if (!cantidadActualizada) {
+                throw new RuntimeException("Error al actualizar la disponibilidad del ejemplar");
+            }
+            
+            System.out.println("✅ Préstamo realizado exitosamente");
+            System.out.println("   📅 Fecha de préstamo: " + prestamoGuardado.getFechadePrestamo());
+            System.out.println("   📚 Ejemplar: " + ejemplar.getTitulo());
+            System.out.println("   👤 Usuario: " + usuario.getNombre());
+            System.out.println("   🆔 Préstamo ID: " + prestamoGuardado.getId());
             
             return true;
             
         } catch (RuntimeException e) {
-            System.out.println(" Error al realizar préstamo: " + e.getMessage());
+            System.out.println("❌ Error al realizar préstamo: " + e.getMessage());
             return false;
         } finally {
             System.out.println("--- Operación de préstamo finalizada ---");
@@ -127,11 +119,11 @@ private int generarNuevoId() {
     
     public boolean registrarDevolucion(int prestamoId) {
         try {
-            System.out.println(" Intentando registrar devolución...");
-            System.out.println("  Préstamo ID: " + prestamoId);
+            System.out.println("📗 Intentando registrar devolución...");
+            System.out.println("   📋 Préstamo ID: " + prestamoId);
             
             // 1. BUSCAR PRÉSTAMO
-            Prestamo prestamo = buscarPrestamoPorId(prestamoId);
+            Prestamo prestamo = prestamoRepository.findById(prestamoId);
             if (prestamo == null) {
                 throw new RuntimeException("Préstamo no encontrado con ID: " + prestamoId);
             }
@@ -149,33 +141,43 @@ private int generarNuevoId() {
             prestamo.setEstado("DEVUELTO");
             prestamo.setFechaDeDevolucion(new Date());
             
-            // 5. ACTUALIZAR DISPONIBILIDAD DEL EJEMPLAR
-            Ejemplar ejemplar = ejemplarService.buscarEjemplarPorId(prestamo.getIdEjemplar());
+            // 5. ACTUALIZAR PRÉSTAMO EN BD
+            Prestamo prestamoActualizado = prestamoRepository.update(prestamo);
+            if (prestamoActualizado == null) {
+                throw new RuntimeException("Error al actualizar el préstamo en la base de datos");
+            }
+            
+            // 6. ACTUALIZAR DISPONIBILIDAD DEL EJEMPLAR
+            Ejemplar ejemplar = ejemplarRepository.findById(prestamo.getIdEjemplar());
             if (ejemplar != null) {
-                ejemplarService.actualizarCantidades(
+                boolean cantidadActualizada = ejemplarRepository.updateCantidades(
                     prestamo.getIdEjemplar(),
                     ejemplar.getCantidadTotal(),
                     ejemplar.getCantidadDisponible() + 1
                 );
+                
+                if (!cantidadActualizada) {
+                    throw new RuntimeException("Error al actualizar la disponibilidad del ejemplar");
+                }
             }
             
-            // 6. ACTUALIZAR MORA DEL USUARIO SI APLICA
+            // 7. ACTUALIZAR MORA DEL USUARIO SI APLICA
             if (mora > 0) {
-             boolean moraActualizada = usuarioService.actualizarMoraUsuario(prestamo.getIdUsuario(), mora);
-              if (!moraActualizada) {
-                  System.out.println(" Advertencia: No se pudo actualizar la mora del usuario");
-              }
-              System.out.println("  Mora aplicada: $" + mora);
+                boolean moraActualizada = usuarioRepository.updateMora(prestamo.getIdUsuario(), mora);
+                if (!moraActualizada) {
+                    System.out.println("⚠️ Advertencia: No se pudo actualizar la mora del usuario");
+                }
+                System.out.println("   ⚠️ Mora aplicada: $" + mora);
             }
             
-            System.out.println(" Devolución registrada exitosamente");
-            System.out.println("  Fecha de devolución: " + prestamo.getFechaDeDevolucion());
-            System.out.println("  Mora calculada: $" + mora);
+            System.out.println("✅ Devolución registrada exitosamente");
+            System.out.println("   📅 Fecha de devolución: " + prestamo.getFechaDeDevolucion());
+            System.out.println("   💰 Mora calculada: $" + mora);
             
             return true;
             
         } catch (RuntimeException e) {
-            System.out.println(" Error al registrar devolución: " + e.getMessage());
+            System.out.println("❌ Error al registrar devolución: " + e.getMessage());
             return false;
         } finally {
             System.out.println("--- Operación de devolución finalizada ---");
@@ -204,94 +206,46 @@ private int generarNuevoId() {
             
             if (diasMora > 0) {
                 double mora = diasMora * moraDiaria;
-                System.out.println(" Días de mora: " + diasMora + " | Mora diaria: $" + moraDiaria);
+                System.out.println("   📅 Días de mora: " + diasMora + " | Mora diaria: $" + moraDiaria);
                 return mora;
             }
             
             return 0.0;
             
         } catch (IllegalArgumentException e) {
-            System.out.println(" Error en cálculo de mora: " + e.getMessage());
+            System.out.println("❌ Error en cálculo de mora: " + e.getMessage());
             return 0.0;
         } catch (Exception e) {
-            System.out.println(" Error inesperado al calcular mora: " + e.getMessage());
+            System.out.println("❌ Error inesperado al calcular mora: " + e.getMessage());
             return 0.0;
         }
     }
     
     public List<Prestamo> listarPrestamosActivos() {
         try {
-            System.out.println(" Listando préstamos activos...");
-            
-            List<Prestamo> prestamosActivos = new ArrayList<>();
-            for (Prestamo prestamo : prestamos) {
-                if ("ACTIVO".equals(prestamo.getEstado())) {
-                    prestamosActivos.add(prestamo);
-                }
-            }
-            
-            System.out.println("✅ " + prestamosActivos.size() + " préstamos activos encontrados");
-            return prestamosActivos;
+            System.out.println("📋 Listando préstamos activos desde BD...");
+            return prestamoRepository.findPrestamosActivos();
             
         } catch (Exception e) {
-            System.out.println(" Error al listar préstamos activos: " + e.getMessage());
+            System.out.println("❌ Error al listar préstamos activos: " + e.getMessage());
             return new ArrayList<>();
         }
     }
     
     public List<Prestamo> listarPrestamosPorUsuario(int usuarioId) {
         try {
-            System.out.println(" Listando préstamos del usuario ID: " + usuarioId);
-            
-            List<Prestamo> prestamosUsuario = new ArrayList<>();
-            for (Prestamo prestamo : prestamos) {
-                if (prestamo.getIdUsuario()== usuarioId) {
-                    prestamosUsuario.add(prestamo);
-                }
-            }
-            
-            System.out.println("✅ " + prestamosUsuario.size() + " préstamos encontrados para el usuario");
-            return prestamosUsuario;
+            System.out.println("👤 Listando préstamos del usuario ID: " + usuarioId);
+            return prestamoRepository.findByUsuario(usuarioId);
             
         } catch (Exception e) {
-            System.out.println("Error al listar préstamos por usuario: " + e.getMessage());
+            System.out.println("❌ Error al listar préstamos por usuario: " + e.getMessage());
             return new ArrayList<>();
         }
     }
     
-    // ==================== MÉTODOS PRIVADOS AUXILIARES ====================
+    // ELIMINAR: private int contarPrestamosActivos() - Ya no necesitamos esto
     
-    private int contarPrestamosActivos(int usuarioId) {
-        try {
-            int count = 0;
-            for (Prestamo prestamo : prestamos) {
-                if (prestamo.getIdUsuario()== usuarioId && "ACTIVO".equals(prestamo.getEstado())) {
-                    count++;
-                }
-            }
-            return count;
-            
-        } catch (Exception e) {
-            System.out.println(" Error al contar préstamos activos: " + e.getMessage());
-            return 0;
-        }
-    }
-    
-    private Prestamo buscarPrestamoPorId(int prestamoId) {
-    try {
-        for (Prestamo prestamo : prestamos) {
-           
-            if (prestamo.getId() == prestamoId) {
-                return prestamo;
-            }
-        }
-        return null;
-        
-    } catch (Exception e) {
-        System.out.println("⚠️ Error al buscar préstamo por ID: " + e.getMessage());
-        return null;
-    }
-}
+    // ELIMINAR: private Prestamo buscarPrestamoPorId() - Ya usamos el repository
     
     // ==================== MÉTODOS DE CONFIGURACIÓN ====================
     
@@ -301,25 +255,25 @@ private int generarNuevoId() {
             this.moraDiaria = moraDiaria;
             this.diasPrestamo = diasPrestamo;
             
-            System.out.println("Configuración del sistema actualizada:");
-            System.out.println(" Máximo de préstamos: " + maxPrestamos);
-            System.out.println(" Mora diaria: $" + moraDiaria);
-            System.out.println(" Días de préstamo: " + diasPrestamo);
+            System.out.println("⚙️ Configuración del sistema actualizada:");
+            System.out.println("   📚 Máximo de préstamos: " + maxPrestamos);
+            System.out.println("   💰 Mora diaria: $" + moraDiaria);
+            System.out.println("   📅 Días de préstamo: " + diasPrestamo);
             
         } catch (Exception e) {
-            System.out.println(" Error al configurar sistema: " + e.getMessage());
+            System.out.println("❌ Error al configurar sistema: " + e.getMessage());
         }
     }
     
     public void mostrarConfiguracion() {
         try {
-            System.out.println(" Configuración actual del sistema:");
-            System.out.println(" Máximo de préstamos por usuario: " + maxPrestamos);
-            System.out.println(" Mora diaria: $" + moraDiaria);
-            System.out.println(" Días de préstamo permitidos: " + diasPrestamo);
+            System.out.println("📊 Configuración actual del sistema:");
+            System.out.println("   📚 Máximo de préstamos por usuario: " + maxPrestamos);
+            System.out.println("   💰 Mora diaria: $" + moraDiaria);
+            System.out.println("   📅 Días de préstamo permitidos: " + diasPrestamo);
             
         } catch (Exception e) {
-            System.out.println(" Error al mostrar configuración: " + e.getMessage());
+            System.out.println("❌ Error al mostrar configuración: " + e.getMessage());
         }
     }
 }
