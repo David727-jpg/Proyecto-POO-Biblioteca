@@ -33,7 +33,7 @@ public class UsuarioService {
             
         } catch (Exception e) {
             System.out.println("❌ Error al listar usuarios: " + e.getMessage());
-            return new ArrayList<>(); // ✅ Compatible con Java 8
+            return new ArrayList<>(); 
         }
     }
     
@@ -226,6 +226,15 @@ public class UsuarioService {
             return "temp1234";
         }
     }
+    
+    public boolean existeEmail(String email) {
+    return usuarioRepository.existeEmail(email);
+}
+
+public boolean actualizarPassword(String email, String nuevaPassword) {
+    return usuarioRepository.actualizarPassword(email, nuevaPassword);
+}
+    
 }
 
 

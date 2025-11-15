@@ -22,4 +22,7 @@ public interface UsuarioRepository {
     Usuario findByEmail(String email);
     boolean updateMora(int usuarioId, double mora);
     List<Usuario> findByTipo(String tipo);
+    boolean existeEmail(String email);
+    boolean actualizarPassword(String email, String nuevaPassword);
+    
 }

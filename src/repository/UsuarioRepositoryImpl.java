@@ -191,4 +191,44 @@ public class UsuarioRepositoryImpl implements UsuarioRepository {
         usuario.setActivo(rs.getBoolean("activo"));
         return usuario;
     }
+    
+    @Override
+    public boolean existeEmail(String email) {
+    String sql = "SELECT COUNT(*) FROM usuarios WHERE email = ? AND activo = true";
+    try (Connection conn = dbService.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        stmt.setString(1, email);
+        ResultSet rs = stmt.executeQuery();
+        
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
+        }
+    } catch (SQLException e) {
+        System.err.println(" Error al verificar email: " + e.getMessage());
+    }
+    return false;
+}
+
+
+    @Override
+    public boolean actualizarPassword(String email, String nuevaPassword) {
+    String sql = "UPDATE usuarios SET password = ? WHERE email = ? AND activo = true";
+    
+    try (Connection conn = dbService.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+        // En un sistema real, deberías hashear la contraseña
+        stmt.setString(1, nuevaPassword);
+        stmt.setString(2, email);
+        
+        int filasAfectadas = stmt.executeUpdate();
+        return filasAfectadas > 0;
+        
+    } catch (SQLException e) {
+        System.err.println(" Error al actualizar password: " + e.getMessage());
+    }
+    return false;
+}
+    
 }

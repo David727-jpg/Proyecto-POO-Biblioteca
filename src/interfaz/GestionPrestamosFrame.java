@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package interfaz;
-import java.awt.Font;  // ← AGREGA ESTE IMPORT
+import java.awt.Font;  
 import java.awt.Dimension;
 import Model.Usuario;
 import javax.swing.*;

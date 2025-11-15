@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package interfaz;
-import java.awt.Font;  // ← AGREGA ESTA LÍNEA
+import java.awt.Font;  
 import Model.Usuario;
 import Model.Ejemplar;
 import service.EjemplarService;
