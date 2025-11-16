@@ -44,12 +44,21 @@ public class MenuPrincipal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        btnEjemplares1 = new javax.swing.JButton();
         lblUsuario = new javax.swing.JLabel();
         btnEjemplares = new javax.swing.JButton();
         btnUsuarios = new javax.swing.JButton();
         btnPrestamos = new javax.swing.JButton();
         btnConsultas = new javax.swing.JButton();
         btnSalir = new javax.swing.JButton();
+        btnConfiguracion = new javax.swing.JButton();
+
+        btnEjemplares1.setText("📚 Ejemplares");
+        btnEjemplares1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEjemplares1ActionPerformed(evt);
+            }
+        });
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -91,6 +100,13 @@ public class MenuPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnConfiguracion.setText("⚙ Configuración");
+        btnConfiguracion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConfiguracionActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -105,9 +121,10 @@ public class MenuPrincipal extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(btnUsuarios, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnEjemplares, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnPrestamos, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnConsultas, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(btnConfiguracion, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(62, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -124,8 +141,10 @@ public class MenuPrincipal extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(btnConsultas, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
+                .addComponent(btnConfiguracion, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(btnSalir, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(13, Short.MAX_VALUE))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
 
         pack();
@@ -172,6 +191,23 @@ public class MenuPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnSalirActionPerformed
 
+    private void btnEjemplares1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEjemplares1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnEjemplares1ActionPerformed
+
+    private void btnConfiguracionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfiguracionActionPerformed
+        // TODO add your handling code here:
+        if (!"ADMIN".equals(usuario.getTipo())) {
+        JOptionPane.showMessageDialog(this, 
+            "❌ Solo los administradores pueden acceder a la configuración del sistema",
+            "Acceso Denegado", 
+            JOptionPane.WARNING_MESSAGE);
+        return;
+        }
+         ConfiguracionFrame configFrame = new ConfiguracionFrame(usuario);
+    configFrame.setVisible(true);
+    }//GEN-LAST:event_btnConfiguracionActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -205,8 +241,10 @@ public class MenuPrincipal extends javax.swing.JFrame {
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnConfiguracion;
     private javax.swing.JButton btnConsultas;
     private javax.swing.JButton btnEjemplares;
+    private javax.swing.JButton btnEjemplares1;
     private javax.swing.JButton btnPrestamos;
     private javax.swing.JButton btnSalir;
     private javax.swing.JButton btnUsuarios;

@@ -32,7 +32,7 @@ public class UsuarioRepositoryImpl implements UsuarioRepository {
                 return mapearUsuario(rs);
             }
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar usuario por ID: " + e.getMessage());
+            System.err.println(" Error al buscar usuario por ID: " + e.getMessage());
         }
         return null;
     }
@@ -50,7 +50,7 @@ public class UsuarioRepositoryImpl implements UsuarioRepository {
                 usuarios.add(mapearUsuario(rs));
             }
         } catch (SQLException e) {
-            System.err.println("❌ Error al listar usuarios: " + e.getMessage());
+            System.err.println(" Error al listar usuarios: " + e.getMessage());
         }
         return usuarios;
     }
@@ -80,7 +80,7 @@ public class UsuarioRepositoryImpl implements UsuarioRepository {
                 }
             }
         } catch (SQLException e) {
-            System.err.println("❌ Error al guardar usuario: " + e.getMessage());
+            System.err.println(" Error al guardar usuario: " + e.getMessage());
         }
         return null;
     }
@@ -105,7 +105,7 @@ public class UsuarioRepositoryImpl implements UsuarioRepository {
                 return usuario;
             }
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar usuario: " + e.getMessage());
+            System.err.println(" Error al actualizar usuario: " + e.getMessage());
         }
         return null;
     }
@@ -120,7 +120,7 @@ public class UsuarioRepositoryImpl implements UsuarioRepository {
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar usuario: " + e.getMessage());
+            System.err.println(" Error al eliminar usuario: " + e.getMessage());
         }
         return false;
     }
@@ -138,7 +138,7 @@ public class UsuarioRepositoryImpl implements UsuarioRepository {
                 return mapearUsuario(rs);
             }
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar usuario por email: " + e.getMessage());
+            System.err.println(" Error al buscar usuario por email: " + e.getMessage());
         }
         return null;
     }
@@ -155,7 +155,7 @@ public class UsuarioRepositoryImpl implements UsuarioRepository {
             
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar mora: " + e.getMessage());
+            System.err.println(" Error al actualizar mora: " + e.getMessage());
         }
         return false;
     }
@@ -175,7 +175,7 @@ public class UsuarioRepositoryImpl implements UsuarioRepository {
                 usuarios.add(mapearUsuario(rs));
             }
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar usuarios por tipo: " + e.getMessage());
+            System.err.println(" Error al buscar usuarios por tipo: " + e.getMessage());
         }
         return usuarios;
     }
@@ -218,7 +218,7 @@ public class UsuarioRepositoryImpl implements UsuarioRepository {
     try (Connection conn = dbService.getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql)) {
         
-        // En un sistema real, deberías hashear la contraseña
+        
         stmt.setString(1, nuevaPassword);
         stmt.setString(2, email);
         

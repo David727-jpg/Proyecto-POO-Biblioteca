@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.8" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+  <NonVisualComponents>
+    <Component class="javax.swing.JButton" name="btnEjemplares1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="\ud83d\udcda Ejemplares" containsInvalidXMLChars="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnEjemplares1ActionPerformed"/>
+      </Events>
+    </Component>
+  </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
   </Properties>
@@ -34,9 +44,10 @@
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="btnUsuarios" min="-2" pref="200" max="-2" attributes="0"/>
                           <Component id="btnEjemplares" min="-2" pref="200" max="-2" attributes="0"/>
+                          <Component id="btnSalir" alignment="1" min="-2" pref="200" max="-2" attributes="0"/>
                           <Component id="btnPrestamos" alignment="1" min="-2" pref="200" max="-2" attributes="0"/>
                           <Component id="btnConsultas" alignment="1" min="-2" pref="200" max="-2" attributes="0"/>
-                          <Component id="btnSalir" alignment="1" min="-2" pref="200" max="-2" attributes="0"/>
+                          <Component id="btnConfiguracion" alignment="1" min="-2" pref="200" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -58,8 +69,10 @@
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="btnConsultas" min="-2" pref="50" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Component id="btnConfiguracion" min="-2" pref="50" max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="btnSalir" min="-2" pref="50" max="-2" attributes="0"/>
-              <EmptySpace pref="13" max="32767" attributes="0"/>
+              <EmptySpace pref="23" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -111,6 +124,14 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSalirActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnConfiguracion">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&#x2699; Configuraci&#xf3;n"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnConfiguracionActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
