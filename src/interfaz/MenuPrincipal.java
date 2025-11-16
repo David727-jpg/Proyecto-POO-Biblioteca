@@ -144,7 +144,8 @@ public class MenuPrincipal extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Solo administradores pueden gestionar usuarios");
             return;
         }
-        JOptionPane.showMessageDialog(this, "Abriendo gestión de usuarios...");
+         GestionUsuariosFrame usuariosFrame = new GestionUsuariosFrame(usuario);
+    usuariosFrame.setVisible(true);
     }//GEN-LAST:event_btnUsuariosActionPerformed
 
     private void btnPrestamosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrestamosActionPerformed
@@ -155,7 +156,8 @@ public class MenuPrincipal extends javax.swing.JFrame {
 
     private void btnConsultasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultasActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "Abriendo consultas...");
+         ConsultasFrame consultasFrame = new ConsultasFrame(usuario);
+    consultasFrame.setVisible(true);
     }//GEN-LAST:event_btnConsultasActionPerformed
 
     private void btnSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalirActionPerformed
