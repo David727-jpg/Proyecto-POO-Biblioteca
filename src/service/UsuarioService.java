@@ -14,7 +14,7 @@ import java.util.List;
  * @author josed
  */
 public class UsuarioService {
-    private UsuarioRepository usuarioRepository;
+    private UsuarioRepository usuarioRepository;  //entrelaza la bd para guardar,actualizar,buscar
     
     public UsuarioService() {
         try {
@@ -25,7 +25,7 @@ public class UsuarioService {
             System.out.println("❌ Error crítico al inicializar UsuarioService: " + e.getMessage());
         }
     }
-    
+    //Listar todos los usuarios
     public List<Usuario> listarTodosUsuarios() {
         try {
             System.out.println("📋 Listando todos los usuarios desde BD...");
@@ -36,7 +36,7 @@ public class UsuarioService {
             return new ArrayList<>(); 
         }
     }
-    
+    //buscar usuarios por id
     public Usuario buscarUsuarioPorId(int id) {
         try {
             System.out.println("🔎 Buscando usuario por ID: " + id);

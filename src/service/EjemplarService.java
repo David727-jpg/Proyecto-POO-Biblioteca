@@ -26,7 +26,7 @@ public class EjemplarService {
         }
     }
     
-    // ELIMINAR: private void cargarEjemplaresDePrueba() - Ya no necesitamos esto
+    
     
     public List<Ejemplar> listarTodosEjemplares() {
         try {
